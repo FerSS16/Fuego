@@ -29,7 +29,10 @@
  const int repeticiones = 10;
 
 ///variables
- std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
+ //std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
+ //double valores_de_P;
+  const float P=0.1;
+ 
  const float g = 0;// INMUNIDAD
 // const float h = P/10;// FRECUENCIA DE GENERACION ESPONTANEA DE FUEGOS (F)
 
@@ -518,7 +521,7 @@ void raster_scan(int col, int fil, bool Matriz_occupied[MAX_SIZE][MAX_SIZE]) {
 //--------------------------------------------------------------------//
 ///medir el tama�o de cada cluster
 
-void Tamano_Cluster(){
+/*void Tamano_Cluster(){
     map<int, int> cluster;
     map<int, int> cantidad;
 
@@ -531,11 +534,11 @@ void Tamano_Cluster(){
         }
     }
 ///tabla que dice cuantos hay de cada tama�o -sin ordnar-
-/*
+
     for(auto& entry : cluster){
         cout<<entry.second<<endl;
     }cout<<endl;
-*/
+
 
     for(auto& entry : cluster){
         int tamano = entry.second;
@@ -554,11 +557,54 @@ ofstream clusters("tama�o", ios::app);
 ///guarda archivo tama�o
 clusters<<"Tama�o    Cantidad"<<endl<<tamanio<< "         " <<cantidad<< endl;
 
-        cout<<tamanio <<"           "<<cantidad<<endl;
+        //cout<<tamanio <<"           "<<cantidad<<endl;
     }
     //cout<<endl;
 clusters.close();
 
+}*/
+void Tamano_Cluster() {
+    map<int, int> cluster;
+    map<int, int> cantidad;
+
+    // Asumimos que 'fil' y 'col' están definidas en otro lugar del código
+    for(int x = 0; x < fil; x++) {
+        for(int y = 0; y < col; y++) {
+            int labels = label[x][y];
+            if(labels != 0) {
+                cluster[labels]++;
+            }
+        }
+    }
+
+    // Tabla que dice cuántos hay de cada tamaño - sin ordenar
+    for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
+        printf("%d\n", it->second);
+    }
+    printf("\n");
+
+    // Tabla que dice cuántos clusters de cada tamaño hay - ordenados
+    for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
+        int tamano = it->second;
+        cantidad[tamano]++;
+    }
+
+    // Guardar archivo tamaño
+    FILE *clusters = fopen("tamaño.txt", "a");
+    if (clusters == NULL) {
+        perror("No se pudo abrir el archivo");
+        return;
+    }
+    
+    fprintf(clusters, "Tamaño    Cantidad\n");
+    for(map<int, int>::iterator it = cantidad.begin(); it != cantidad.end(); ++it) {
+        int tamanio = it->first;
+        int cantidad = it->second;
+
+        fprintf(clusters, "%d         %d\n", tamanio, cantidad);
+    }
+    
+    fclose(clusters);
 }
 
 //--------------------------------------------------------------------//
@@ -587,7 +633,7 @@ Labels(); Label();
 
 /// Imprimir las matrices usadas
 
-/*    for (int y = 0; y < fil; y++) {
+    for (int y = 0; y < fil; y++) {
         for (int x = 0; x < col; x++) {
             cout << Matriz_occupied[x][y] << "        ";
         }
@@ -600,9 +646,9 @@ cout<<endl;
         }
             cout << endl<<endl;
         }
-*/
+
     Tamano_Cluster();
-  //  return 0;
+    return 0;
 }
 
 /*--------------------------------------------------------------*/
@@ -615,7 +661,7 @@ ofstream matriz_moleculas("Matriz_moleculas");
 
        for(int i=1;i<pasos+1;i++){
 
-        fuegos=0;
+        //fuegos=0;
 
 ///calcula la dimension fractal
 //    DF();
@@ -647,7 +693,7 @@ matriz_hk.close();
 
  Distribucion();
    if(i>1 && fuegos==0){
-        cout<<"stop en i= "<<i<<endl;
+       // cout<<"stop en i= "<<i<<endl;
         //Hoshen_Kopelman();
    break;
    }
@@ -741,29 +787,30 @@ int main(){
 //vector<float> valores = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
 //vector<float> valores = {/*0.008, 0.01, 0.015, 0.02, 0.04, 0.07, 0.1*/0.036};
 
-    valores_de_P = {0.008};
+ //   valores_de_P = 0.008;
 largest_label=0;
  //   for(float P : valores_de_P){
- float P=0.1;
 
 
-            cout<<"L = "<<fil<<endl;
-            cout<<"Pasos = "<<pasos<<endl;
-            cout<<"repeticiones = "<<repeticiones<<endl;
-            cout<<"P = "<<P<<endl<<endl;
+Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+            //cout<<"L = "<<fil<<endl;
+            //cout<<"Pasos = "<<pasos<<endl;
+            //cout<<"repeticiones = "<<repeticiones<<endl;
+            //cout<<"P = "<<P<<endl<<endl;
 
-            cout<<"Tama�o    Cantidad"<<endl;
+            //cout<<"Tama�o    Cantidad"<<endl;
 
         for(int j=0;j<repeticiones;j++){
-            Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+           // Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
 
             fuegos=0;
             vacios=0;
             arboles=0;
 
             Pasos(P);
-cout<<endl;
+//cout<<endl;
             }
+            
       //  }
 
     return 0;
