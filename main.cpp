@@ -20,13 +20,13 @@
 
 /*----------------------------------------------------------------------------*/
 ///cantidad de filas y columnas de la matriz
- const int fil = 50;
+ const int fil = 100;
  const int col = fil;
 
 ///cantidad de veces que se recorre la matriz de estados
- const int pasos = 300;
+ const int pasos = 100;
  const int salteo = 0;
- const int repeticiones = 10;
+ const int repeticiones = 1;
 
 ///variables
  //std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
@@ -82,6 +82,9 @@ double L, N, logL, logN, D;
  double fuegos;
  double vacios;
  double arboles;
+ double fvt;
+ double vvt;
+ double avt;
 
  //dimension fractal
  double radio;
@@ -268,6 +271,8 @@ void Distribucion(void){
            if(Matriz_estados[f][c]==2){
 ///conteo de fuegos
                 fuegos+=1;
+                fvt+=1;
+                
 ///histograma de fuegos
 /*
            for(int m=0;m<fil;m++){
@@ -289,9 +294,12 @@ void Distribucion(void){
             }
             else if(Matriz_estados[f][c]==0){
                 vacios+=1;
+                vvt+=1;
+                
                 }
             else if(Matriz_estados[f][c]==1){
                 arboles+=1;
+                avt+=1;
                 }
          }
     }
@@ -519,7 +527,7 @@ void raster_scan(int col, int fil, bool Matriz_occupied[MAX_SIZE][MAX_SIZE]) {
 }
 
 //--------------------------------------------------------------------//
-///medir el tama�o de cada cluster
+///medir el tama�o de cada cluster (no anda en el cluster, esta remediado mas adelante)
 
 /*void Tamano_Cluster(){
     map<int, int> cluster;
@@ -632,7 +640,7 @@ Labels(); Label();
     raster_scan(col, fil, Matriz_occupied);
 
 /// Imprimir las matrices usadas
-
+/*
     for (int y = 0; y < fil; y++) {
         for (int x = 0; x < col; x++) {
             cout << Matriz_occupied[x][y] << "        ";
@@ -646,7 +654,7 @@ cout<<endl;
         }
             cout << endl<<endl;
         }
-
+*/
     Tamano_Cluster();
     return 0;
 }
@@ -656,8 +664,12 @@ cout<<endl;
 /*--------------------------------------------------------------*/
 void Pasos(float valor){
 
-///abre el archivo
-ofstream matriz_moleculas("Matriz_moleculas");
+///abre el archivo video
+//ofstream matriz_moleculas("Matriz_moleculas");
+///abre archivo f_vs_t
+ofstream f_vs_t("f_vs_t");
+         f_vs_t<<"t      fuego   arboles    vacios"<<endl;
+
 
        for(int i=1;i<pasos+1;i++){
 
@@ -673,7 +685,7 @@ if(i==pasos-1){
 //Distribucion();
 
   ///guarda hoshen kopelman:
-
+/*
 ofstream matriz_hk("Matriz_hk");
         matriz_hk<<"ITEM: TIMESTEP"<<endl<<i<<endl<<"ITEM: NUMBER OF ATOMS"<<endl<<fil*col<<".0"<<endl<<"ITEM: BOX BOUNDS pp pp"<<endl<<"0.0"<<" "<<fil-1<<".0"<<endl<<"0.0"<<" "<<col-1<<endl<<"0.0"<<" "<<"0.0"<<endl<<"ITEM: ATOMS id type x y z"<<endl;
 
@@ -686,12 +698,19 @@ ofstream matriz_hk("Matriz_hk");
                         }
                     }
 matriz_hk.close();
-
+*/
 ///archivo guardado
 
 }
 
+ fvt =0;
+ avt=0;
+ vvt=0;
  Distribucion();
+
+///guarda distribucin temporal  f_vs_t
+ f_vs_t<<i<<"   "<<fvt<<"   "<<avt<<"   "<<vvt<<endl;
+
    if(i>1 && fuegos==0){
        // cout<<"stop en i= "<<i<<endl;
         //Hoshen_Kopelman();
@@ -716,7 +735,7 @@ matriz_hk.close();
                             }
                         }
                     }
-
+/*
         matriz_moleculas<<"ITEM: TIMESTEP"<<endl<<i<<endl<<"ITEM: NUMBER OF ATOMS"<<endl<<fil*col<<".0"<<endl<<"ITEM: BOX BOUNDS pp pp"<<endl<<"0.0"<<" "<<fil-1<<".0"<<endl<<"0.0"<<" "<<col-1<<endl<<"0.0"<<" "<<"0.0"<<endl<<"ITEM: ATOMS id type x y z"<<endl;
 
         int k=0;
@@ -727,6 +746,7 @@ matriz_hk.close();
                         k++;
                         }
                     }
+*/
 
 ///archivo guardado
 
@@ -771,7 +791,8 @@ matriz_hk.close();
                     }
 
 ///cierra el archivo
-matriz_moleculas.close();
+//matriz_moleculas.close();
+f_vs_t.close();
 
 }
 /*----------------------------------------------------------------------------*/
@@ -783,21 +804,13 @@ int main(){
 /// generar el patr�n de quemado en la matriz
     srand(time(0)); contorno(); randomizar();Condiciones_Periodicas();
 
-///valores de P para los graficos
-//vector<float> valores = {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1};
-//vector<float> valores = {/*0.008, 0.01, 0.015, 0.02, 0.04, 0.07, 0.1*/0.036};
-
- //   valores_de_P = 0.008;
 largest_label=0;
- //   for(float P : valores_de_P){
-
 
 Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
             //cout<<"L = "<<fil<<endl;
             //cout<<"Pasos = "<<pasos<<endl;
             //cout<<"repeticiones = "<<repeticiones<<endl;
             //cout<<"P = "<<P<<endl<<endl;
-
             //cout<<"Tama�o    Cantidad"<<endl;
 
         for(int j=0;j<repeticiones;j++){
@@ -806,6 +819,9 @@ Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
             fuegos=0;
             vacios=0;
             arboles=0;
+            fvt=0;
+            vvt=0;
+            avt=0;
 
             Pasos(P);
 //cout<<endl;
