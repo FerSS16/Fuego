@@ -1,4 +1,2 @@
--errores del for -> c++98
 -sorteo de r para cada celda aka matriz probabilidad
--kpelman guardar datos
--
+-obtener muchos datos para diferentes L
