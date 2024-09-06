@@ -20,6 +20,7 @@
 
 /*----------------------------------------------------------------------------*/
 ///cantidad de filas y columnas de la matriz
+<<<<<<< HEAD
  const int fil = 64;
  const int col = fil;
 
@@ -27,6 +28,15 @@
  const int pasos = 500;
  const int salteo = 0;
  const int repeticiones = 2;
+=======
+ const int fil = 100;
+ const int col = fil;
+
+///cantidad de veces que se recorre la matriz de estados
+ const int pasos = 100;
+ const int salteo = 0;
+ const int repeticiones = 1;
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
 
 ///variables
  //std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
@@ -79,6 +89,7 @@ float L, N, logL, logN, D;
  int res[fil];
 
  //cantidades
+<<<<<<< HEAD
  int fuegos;
  int vectorfuegos[pasos];
  int vacios;
@@ -91,6 +102,14 @@ float L, N, logL, logN, D;
  float media;
  float varianza ;
  float desviacionestandar;
+=======
+ double fuegos;
+ double vacios;
+ double arboles;
+ double fvt;
+ double vvt;
+ double avt;
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
 
  //dimension fractal
  double radio;
@@ -592,12 +611,21 @@ void Tamano_Cluster() {
         }
     }
 
+<<<<<<< HEAD
     // imprime Tabla que dice cuántos hay de cada tamaño - sin ordenar 
     /*for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
         printf("%d\n", it->second);
     }
     printf("\n");
     */
+=======
+    // Tabla que dice cuántos hay de cada tamaño - sin ordenar
+    for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
+        printf("%d\n", it->second);
+    }
+    printf("\n");
+
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
     // Tabla que dice cuántos clusters de cada tamaño hay - ordenados
     for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
         int tamano = it->second;
@@ -605,13 +633,20 @@ void Tamano_Cluster() {
     }
 
     // Guardar archivo tamaño
+<<<<<<< HEAD
     FILE *clusters = fopen("tamano.txt", "a");
+=======
+    FILE *clusters = fopen("tamaño.txt", "a");
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
     if (clusters == NULL) {
         perror("No se pudo abrir el archivo");
         return;
     }
     
+<<<<<<< HEAD
     fprintf(clusters, "\nP= %f\nL= %d\nRepeticiones= %d\nPasos= %d\n\n",P,fil,repeticiones,pasos);
+=======
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
     fprintf(clusters, "Tamaño    Cantidad\n");
     for(map<int, int>::iterator it = cantidad.begin(); it != cantidad.end(); ++it) {
         int tamanio = it->first;
@@ -674,13 +709,23 @@ void Pasos(float valordeP){
 
 ///abre el archivo video
 //ofstream matriz_moleculas("Matriz_moleculas");
+<<<<<<< HEAD
+=======
+///abre archivo f_vs_t
+ofstream f_vs_t("f_vs_t");
+         f_vs_t<<"t      fuego   arboles    vacios"<<endl;
+
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
 
 ///abre archivo f_vs_t
 ofstream f_vs_t("f_vs_t.csv");
          if (f_vs_t.tellp() == 0) {f_vs_t << "t;fuego;arboles;vacios" << endl;}
 
+<<<<<<< HEAD
 for(int i=1;i<pasos+1;i++){
 
+=======
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
         //fuegos=0;
 
 ///calcula la dimension fractal
@@ -715,6 +760,7 @@ matriz_hk.close();
  fvt =0;
  avt=0;
  vvt=0;
+<<<<<<< HEAD
 
  Distribucion();//contador de fuegos, arboles y vacios
 
@@ -734,6 +780,17 @@ if(i>10 && i % 10 == 0){
     varianza = (cuadrados / 10) - (media * media)/(10*10);
     desviacionestandar = sqrt(varianza);
     cout<<i<<"  "<<media<<"  "<<desviacionestandar<<endl;
+=======
+ Distribucion();
+
+///guarda distribucin temporal  f_vs_t
+ f_vs_t<<i<<"   "<<fvt<<"   "<<avt<<"   "<<vvt<<endl;
+
+   if(i>1 && fuegos==0){
+       // cout<<"stop en i= "<<i<<endl;
+        //Hoshen_Kopelman();
+   break;
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
    }
 
 
@@ -827,6 +884,7 @@ int main(){
 /// generar el patr�n de quemado en la matriz
     srand(time(0)); contorno(); randomizar();Condiciones_Periodicas();
 
+<<<<<<< HEAD
     cout<<"generando numeros aleatorios..."<<endl<<"Condiciones periodocas..."<<endl<<endl;
     cout<<"L = "<<fil<<endl;
     cout<<pasos<<" pasos..."<<endl;
@@ -839,6 +897,16 @@ int main(){
 largest_label=0;
 
 Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+=======
+largest_label=0;
+
+Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+            //cout<<"L = "<<fil<<endl;
+            //cout<<"Pasos = "<<pasos<<endl;
+            //cout<<"repeticiones = "<<repeticiones<<endl;
+            //cout<<"P = "<<P<<endl<<endl;
+            //cout<<"Tama�o    Cantidad"<<endl;
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
 
         for(int j=0;j<repeticiones;j++){
            // Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
@@ -851,6 +919,13 @@ Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
             avt=0;
 
             Pasos(P);
+<<<<<<< HEAD
+=======
+//cout<<endl;
+            }
+            
+      //  }
+>>>>>>> bb69cb62b0d851b794b16f615310633f94b8852f
 
             }
 cout<<"Listo capo"<<endl;

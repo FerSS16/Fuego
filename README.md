@@ -1,0 +1,2 @@
+-sorteo de r para cada celda aka matriz probabilidad
+-obtener muchos datos para diferentes L
