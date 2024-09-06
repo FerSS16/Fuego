@@ -6,7 +6,7 @@
  //#include<conio.h>
  //#include<dos.h>
  #include <time.h>
-
+#include <cassert>
  #include <iostream>
  #include <ctime>
  #include <cstdlib>
@@ -20,13 +20,13 @@
 
 /*----------------------------------------------------------------------------*/
 ///cantidad de filas y columnas de la matriz
- const int fil = 100;
+ const int fil = 64;
  const int col = fil;
 
 ///cantidad de veces que se recorre la matriz de estados
- const int pasos = 100;
+ const int pasos = 500;
  const int salteo = 0;
- const int repeticiones = 1;
+ const int repeticiones = 2;
 
 ///variables
  //std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
@@ -48,7 +48,7 @@
 /// n�mero de cajas que contienen sitios con fuego
 int ncajas[NCAJAS];
 //int i, j, k;
-double L, N, logL, logN, D;
+float L, N, logL, logN, D;
 //FILE *fp;
 
 ///objetos que se van a usar
@@ -79,12 +79,18 @@ double L, N, logL, logN, D;
  int res[fil];
 
  //cantidades
- double fuegos;
- double vacios;
- double arboles;
- double fvt;
- double vvt;
- double avt;
+ int fuegos;
+ int vectorfuegos[pasos];
+ int vacios;
+ int arboles;
+ int fvt;
+ int vvt;
+ int avt;
+
+ //media y varianza
+ float media;
+ float varianza ;
+ float desviacionestandar;
 
  //dimension fractal
  double radio;
@@ -303,6 +309,7 @@ void Distribucion(void){
                 }
          }
     }
+
 }
 
 /*--------------------------------------------------------------*/
@@ -585,12 +592,12 @@ void Tamano_Cluster() {
         }
     }
 
-    // Tabla que dice cuántos hay de cada tamaño - sin ordenar
-    for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
+    // imprime Tabla que dice cuántos hay de cada tamaño - sin ordenar 
+    /*for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
         printf("%d\n", it->second);
     }
     printf("\n");
-
+    */
     // Tabla que dice cuántos clusters de cada tamaño hay - ordenados
     for(map<int, int>::iterator it = cluster.begin(); it != cluster.end(); ++it) {
         int tamano = it->second;
@@ -598,12 +605,13 @@ void Tamano_Cluster() {
     }
 
     // Guardar archivo tamaño
-    FILE *clusters = fopen("tamaño.txt", "a");
+    FILE *clusters = fopen("tamano.txt", "a");
     if (clusters == NULL) {
         perror("No se pudo abrir el archivo");
         return;
     }
     
+    fprintf(clusters, "\nP= %f\nL= %d\nRepeticiones= %d\nPasos= %d\n\n",P,fil,repeticiones,pasos);
     fprintf(clusters, "Tamaño    Cantidad\n");
     for(map<int, int>::iterator it = cantidad.begin(); it != cantidad.end(); ++it) {
         int tamanio = it->first;
@@ -662,16 +670,16 @@ cout<<endl;
 /*--------------------------------------------------------------*/
 /*--------------------EVOLUCION---------------------------------*/
 /*--------------------------------------------------------------*/
-void Pasos(float valor){
+void Pasos(float valordeP){
 
 ///abre el archivo video
 //ofstream matriz_moleculas("Matriz_moleculas");
+
 ///abre archivo f_vs_t
-ofstream f_vs_t("f_vs_t");
-         f_vs_t<<"t      fuego   arboles    vacios"<<endl;
+ofstream f_vs_t("f_vs_t.csv");
+         if (f_vs_t.tellp() == 0) {f_vs_t << "t;fuego;arboles;vacios" << endl;}
 
-
-       for(int i=1;i<pasos+1;i++){
+for(int i=1;i<pasos+1;i++){
 
         //fuegos=0;
 
@@ -680,6 +688,7 @@ ofstream f_vs_t("f_vs_t");
 
 ///Hoshen-Kopelman
 if(i==pasos-1){
+    cout<<"Hoshen-Kopelman..."<<endl<<endl;
     Hoshen_Kopelman();
 //    Tamano_Cluster();
 //Distribucion();
@@ -706,17 +715,31 @@ matriz_hk.close();
  fvt =0;
  avt=0;
  vvt=0;
- Distribucion();
 
-///guarda distribucin temporal  f_vs_t
- f_vs_t<<i<<"   "<<fvt<<"   "<<avt<<"   "<<vvt<<endl;
+ Distribucion();//contador de fuegos, arboles y vacios
 
-   if(i>1 && fuegos==0){
-       // cout<<"stop en i= "<<i<<endl;
-        //Hoshen_Kopelman();
-   break;
+ if(fvt == 0){cout<<"NOS QUEDAMOS SIN FUEGO EN EL PASO "<<i<<endl;
+                break;}
+
+//media y varianza
+vectorfuegos[i] = fvt;
+int suma = 0;
+int cuadrados = 0; 
+if(i>10 && i % 10 == 0){
+    for(int j = i-10; j < i+1; j++){
+        suma += vectorfuegos[j];
+        cuadrados += vectorfuegos[j] * vectorfuegos[j];
+    }
+    media = suma / 10;
+    varianza = (cuadrados / 10) - (media * media)/(10*10);
+    desviacionestandar = sqrt(varianza);
+    cout<<i<<"  "<<media<<"  "<<desviacionestandar<<endl;
    }
 
+
+
+///guarda distribucin temporal  f_vs_t
+ f_vs_t<<i<<";"<<fvt<<";"<<avt<<";"<<vvt<<endl;
 
 ///guarda el archivo de fuegos, vacios y arboles
 ///Primero le pongo nombre de atomos a los lugares
@@ -763,7 +786,7 @@ matriz_hk.close();
 
             switch(matriz_e){
 
-        case 0: {if(Matriz_probabilidades[f][c]<(valor)){Matriz_pasos[f][c]=1;}
+        case 0: {if(Matriz_probabilidades[f][c]<(valordeP)){Matriz_pasos[f][c]=1;}
                     else {Matriz_pasos[f][c]=0;}
 
                 }break;
@@ -804,14 +827,18 @@ int main(){
 /// generar el patr�n de quemado en la matriz
     srand(time(0)); contorno(); randomizar();Condiciones_Periodicas();
 
+    cout<<"generando numeros aleatorios..."<<endl<<"Condiciones periodocas..."<<endl<<endl;
+    cout<<"L = "<<fil<<endl;
+    cout<<pasos<<" pasos..."<<endl;
+    cout<<repeticiones<<" repeticion/es..."<<endl;
+    cout<<"P = "<<P<<endl<<endl;
+    cout<<"inicializando matrices..."<<endl;
+
+    //generar patron de quemado en la matriz
+
 largest_label=0;
 
 Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
-            //cout<<"L = "<<fil<<endl;
-            //cout<<"Pasos = "<<pasos<<endl;
-            //cout<<"repeticiones = "<<repeticiones<<endl;
-            //cout<<"P = "<<P<<endl<<endl;
-            //cout<<"Tama�o    Cantidad"<<endl;
 
         for(int j=0;j<repeticiones;j++){
            // Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
@@ -824,11 +851,9 @@ Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
             avt=0;
 
             Pasos(P);
-//cout<<endl;
-            }
-            
-      //  }
 
+            }
+cout<<"Listo capo"<<endl;
     return 0;
 }
 
