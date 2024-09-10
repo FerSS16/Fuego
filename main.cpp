@@ -1,15 +1,13 @@
 /* ------------------------------ INCLUYE ----------------------------------- */
  //#include<stdio.h>
- #include <cstdlib>
- #include <math.h>
+ //#include <cstdlib>
+ //#include <math.h>
+ #include <cmath>
  #include <string.h>
- //#include<conio.h>
- //#include<dos.h>
  #include <time.h>
-#include <cassert>
+ #include <cassert>
  #include <iostream>
  #include <ctime>
- #include <cstdlib>
  #include <iomanip>
  #include <fstream>
  #include <string>
@@ -21,13 +19,13 @@
 /*----------------------------------------------------------------------------*/
 ///cantidad de filas y columnas de la matriz
 
- const int fil = 64;
+ const int fil = 512;
  const int col = fil;
 
 ///cantidad de veces que se recorre la matriz de estados
- const int pasos = 50;
+ const int pasos = 150;
  const int salteo = 0;
- const int repeticiones = 2;
+ const int repeticiones = 100;
 
 ///variables
  //std::vector<float> valores_de_P;// PROBABILIDAD DE CRECIMIENTO
@@ -56,17 +54,17 @@ float L, N, logL, logN, D;
  //matrices de probabilidades
  float Matriz_probabilidades[fil][col];
  float Matriz_inmunity[fil][col];
- float Matriz_f[fil][col];
+ //float Matriz_f[fil][col];
 
  //Evolucion
  float Matriz_estados[fil][col];
  float Matriz_pasos[fil][col];
  float Matriz_ayuda[fil][col];
 
- char Matriz_moleculas[fil][col];
- char H = H;
- char C = C;
- char O = O;
+ //char Matriz_moleculas[fil][col];
+ //char H = 'H';
+ //char C = 'C';
+ //char O = 'O';
 
  //Hoshen-Kopelman
  bool Matriz_occupied[fil][col];
@@ -82,7 +80,7 @@ float L, N, logL, logN, D;
  //cantidades
 
  int fuegos;
- int vectorfuegos[10];
+ //int vectorfuegos[10];
  int vacios;
  int arboles;
  int fvt;
@@ -207,25 +205,25 @@ void Matriz_Inmunity(void){
 
 /*----------------------------------------------------------------------------*/
 
-void Matriz_F(void){
+/*void Matriz_F(void){
 
      for(int f=0;f<fil;f++){
             for(int c=0;c<col;c++){
                     Matriz_f[f][c] = (float) ran01();
             }
       }
-}
+}*/
 
 /*----------------------------------------------------------------------------*/
 
-void Matriz_Moleculas(void){
+/*void Matriz_Moleculas(void){
 
      for(int f=0;f<fil;f++){
             for(int c=0;c<col;c++){
                 Matriz_moleculas[f][c] = 'x';
                 }
         }
-}
+}*/
 
 /*----------------------------------------------------------------------------*/
 /*----------------------------MATRICES DE EVOLUCION---------------------------*/
@@ -236,6 +234,7 @@ void Matriz_Estados(void){
      for(int f=0;f<fil;f++){
             for(int c=0;c<col;c++){
                Matriz_ayuda[f][c]= (float) ran01();///matriz inicial
+               Matriz_estados[f][c]= 0;///matriz inicial
         }
 }
 
@@ -248,17 +247,6 @@ void Matriz_Estados(void){
                         else if(Matriz_ayuda[f][c]<=0.15){Matriz_estados[f][c]=2;}
         }
     }
-
-///imprime matriz estados
-/*
-        for(int f=0;f<fil;f++){
-            for(int c=0;c<col;c++){
-                cout<<Matriz_estados[f][c]<<"  ";
-            }
-                cout<<endl;
-            }
-                cout<<endl;
-*/
 }
 
 /*--------------------------------------------------------------*/
@@ -267,7 +255,7 @@ void Matriz_Pasos(void){
 
      for(int f=0;f<fil;f++){
             for(int c=0;c<col;c++){
-               Matriz_pasos[f][c]=1;//matriz inicial
+               Matriz_pasos[f][c]=0;//matriz inicial
                 }
         }
 }
@@ -323,13 +311,13 @@ void Distribucion(void){
 /*-----------------DIMENSION FRACTAL (no me acuerdo como hace)--*/
 /*--------------------------------------------------------------*/
 
-void DF(void){
+/*void DF(void){
 
 /// inicializar el arreglo de n�mero de cajas con ceros
 //cout<<"log10(L)       log10(N)"<<endl;
 
 /// calcular el n�mero de cajas que contienen sitios con fuego para diferentes tama�os de cajas
-/*    for (int k = 0; k < NCAJAS; k++) {
+-    for (int k = 0; k < NCAJAS; k++) {
         L = LMIN + k * (LMAX - LMIN) / (NCAJAS - 1); // tama�o de la caja
         for (int i = 0; i < L; i ++){
             for (int j = 0; j < L; j ++) {
@@ -340,7 +328,7 @@ void DF(void){
     }
         cout<<L<<"       "<<ncajas[k]<<endl;
 }
-*/
+-
 
     for(int k = 0; k < NCAJAS; k++) {
 /// tama�o de la caja
@@ -354,7 +342,7 @@ void DF(void){
     }
 //cout<<L<<"       "<<ncajas[k]<<endl;
 }
-/*
+-
 D = (log10(ncajas[NCAJAS-1]) - log10(ncajas[0])) / (log10(LMAX) - log10(LMIN));
 cout<<ncajas[NCAJAS-1]<<endl;
 
@@ -377,9 +365,11 @@ cout<<ncajas[NCAJAS-1]<<endl;
      D = (log10(ncajas[NCAJAS-1]) - log10(ncajas[0])) / (log10(LMAX) - log10(LMIN)); // dimensi�n fractal: pendiente log log
      printf("Dimensi�n fractal: %.4f\n", D);
      cout<<endl<<"DF = "<<D<<endl;
-*/
-}
+-
+}*/
 
+/*--------------------------------------------------------------*/
+/*-------------------------HOSHEN-KOPELMAN----------------------*/
 /*--------------------------------------------------------------*/
 
 void Matriz_Occupied(void){
@@ -402,7 +392,6 @@ void Labels(void){
 /*--------------------------------------------------------------*/
 
 void Label(void){
-
      for(int f=0;f<fil;f++){
             for(int c=0;c<col;c++){
                     label[f][c] = 0;
@@ -411,9 +400,6 @@ void Label(void){
 }
 
 /*--------------------------------------------------------------*/
-/*-------------------------HOSHEN-KOPELMAN----------------------*/
-/*--------------------------------------------------------------*/
-
 ///FUNCIONES QUE USAR� RASTER SCAN
 
 ///encuentra marcas
@@ -527,7 +513,7 @@ void raster_scan(int col, int fil, bool Matriz_occupied[MAX_SIZE][MAX_SIZE]) {
         }
      }
 
-  for(int l=0;l<fil*fil;l++){
+  for(int l=0;l<fil*col;l++){
     int w = find_label(l);
        for (int y = 0; y < fil; y++) {
         for (int x = 0; x < col; x++) {
@@ -837,17 +823,19 @@ int main(){
 
     //generar patron de quemado en la matriz
 
-largest_label=0;
 
-Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+
+//Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
 
 ofstream f_vs_t("f_vs_t.csv", ios::app);
 
     f_vs_t<<"t;fuego;arboles;vacios"<<endl;
 
         for(int j=0;j<repeticiones;j++){
-           // Matriz_Moleculas(); Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
+            //Matriz_Moleculas(); 
+            Matriz_Estados(); Matriz_Pasos(); Matriz_Occupied();
 
+            largest_label=0;
             fuegos=0;
             vacios=0;
             arboles=0;
@@ -860,7 +848,7 @@ ofstream f_vs_t("f_vs_t.csv", ios::app);
             //vectorfuegos.assign(10, 0);
 
             Pasos(P,f_vs_t);
-
+            cout<<"Rep"<<j<<endl;
             }
             f_vs_t.close();
         
